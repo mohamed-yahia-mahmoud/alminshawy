@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1049224217200",
+    "project_id": "alminshawy-88d0d",
+    "storage_bucket": "alminshawy-88d0d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1049224217200:android:943d3e9574f1c9682baab5",
+        "android_client_info": {
+          "package_name": "com.mohamedyahiaelomda.alminshawy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1049224217200-35pdho7ntopare99fdpovi042di6p60h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVycTxnpYSTj_vgM6lDyvygpoCDjVxZcg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1049224217200-35pdho7ntopare99fdpovi042di6p60h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
