@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:alminshawy/mobx/QuranMobx.dart';
+import 'package:alminshawy/statefull/Ad_helper.dart';
 import 'package:alminshawy/statefull/Player.dart';
 import 'package:alminshawy/statless/AlertLogOut.dart';
  import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
  import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
-
+import 'Ad_helper.dart';
 import 'AboutShikh.dart';
 
 
@@ -26,30 +27,11 @@ class _HomeState extends State<Home> {
 
   QuranMobx con;
 
-  BannerAd _bannerAd;
 
+  BannerAd _Ad;
+  bool isLoaded=false;
 
-  //---------------------------------- ad initialization -------------------------------------
-
-/*
-
-  static const MobileAdTargetingInfo targetingInfo=MobileAdTargetingInfo(
-      keywords: <String>['quran', 'alafasy'],
-      contentUrl: 'https://flutter.io',
-      childDirected: false,
-      testDevices: <String>[testDevice]
-  );
-
-*/
-
-  static final AdRequest request = AdRequest(
-    keywords: <String>['alminshawy', 'quran'],
-    contentUrl: 'https://flutter.io',
-    nonPersonalizedAds: true,
-  );
-
-  BannerAd _anchoredBanner;
-  bool _loadingAnchoredBanner = false;
+  List <String> testDevices=new List();
 
 
 
@@ -65,93 +47,57 @@ class _HomeState extends State<Home> {
   int myIndex=0;
 
 
-  String getAppId() {
-
-    print ("get app id ");
-    print(Platform.isIOS);
-    print(Platform.isAndroid);
-    if (Platform.isIOS) {
-      return IOS_APP_ID;
-    } else if (Platform.isAndroid) {
-      return ANDROID_APP_ID;
-    }
-    return null;
-  }
-
-//  BannerAd createBannerAd(){
-//    return BannerAd(
-//        adUnitId:  getBannerAdUnitId() ,
-//        size: AdSize.fullBanner,
-//        targetingInfo: targetingInfo,
-//        listener: (MobileAdEvent event) {
-//          if (event == MobileAdEvent.loaded) {
-//            _bannerAd.show(anchorOffset: -10.0, anchorType: AnchorType.bottom,  horizontalCenterOffset: 0.0,);
-//
-//          }
-//        }
-//    );
-//  }
-
-  String getBannerAdUnitId() {
-    print("*******************");
-    print("getBannerAdUnitId");
-    print(Platform.isAndroid);
-
-    if (Platform.isAndroid) {
-      return ANDROID_AD_UNIT_BANNER;
-    } else {
-      return IOS_AD_UNIT_BANNER;
-
-    }
-
-  }
-
-//------------------------------------------------------------------------------------------------
-
-
-
   @override
   void initState() {
 
-    _bannerAd = BannerAd(
-      size: AdSize.banner,
-      adUnitId: /*BannerAd.testAdUnitId*/getBannerAdUnitId(),
-      listener:  AdListener(
-        onAdLoaded: (Ad ad) {
-          print('$BannerAd loaded.');
-          setState(() {
-            _anchoredBanner = ad as BannerAd;
-          });
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          print('$BannerAd failedToLoad: $error');
-          ad.dispose();
-        },
-        onAdOpened: (Ad ad) => print('$BannerAd onAdOpened.'),
-        onAdClosed: (Ad ad) => print('$BannerAd onAdClosed.'),
-      ),
-      request: request,
-    );
-    _bannerAd.load();
-
-
-//    FirebaseAdMob.instance.initialize(appId: getAppId());
-//    _bannerAd=createBannerAd()..load()..show(
-//      anchorOffset: 0.0,
-//      anchorType: AnchorType.bottom,
-//      horizontalCenterOffset: 0.0,
-//    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       con.getMySuraId();
     });
     super.initState();
+
+
+
+    _Ad=BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: AdListener(
+        onAdLoaded: (_){
+          setState(() {
+            isLoaded=true;
+          });
+        },
+        onAdFailedToLoad: (_,error){
+          print('AD failed to load with error $error');
+        }
+      )
+    );
+    _Ad.load();
+
+  }
+
+
+  Widget checkForAd(){
+    if(isLoaded){
+      return Container(
+        child: AdWidget(
+          ad: _Ad,
+        ),
+        width: _Ad.size.width.toDouble(),
+        height: _Ad.size.height.toDouble(),
+        alignment: Alignment.bottomCenter,
+      );
+    }else{
+      return Container();
+    }
   }
 
   @override
   void dispose() {
+    _Ad?.dispose();
     super.dispose();
-    _bannerAd.dispose();
+
   }
 
 
@@ -211,7 +157,7 @@ class _HomeState extends State<Home> {
 
                           child:  ClipOval(
                             child: Image(
-                              image: AssetImage("assets/affasy.jpg"),
+                              image: AssetImage("assets/minshawy2.jpg"),
                               width:  (MediaQuery.of(context).size.width) -  200,
                               height:  (MediaQuery.of(context).size.width) -  200,
                               fit: BoxFit.cover,
@@ -224,7 +170,7 @@ class _HomeState extends State<Home> {
 
                     SizedBox(height: 5),
 
-                    Center(child: Text("الشيخ مشارى بن راشد العفاسى",style: TextStyle(color: Colors.white,fontSize: 22),),),
+                    Center(child: Text("الشيخ محمد صديق المنشاوي",style: TextStyle(color: Colors.white,fontSize: 22),),),
 
                     //  widget.loadingText
                   ],
@@ -308,121 +254,121 @@ class _HomeState extends State<Home> {
 
         body: Observer(
           builder: (_) {
-            return Stack(
-              children: [
-                Container(
-                  child: Container(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                      child: Container(
-                        width: (MediaQuery.of(context).size.width),
-                        height: (MediaQuery.of(context).size.height*.78),
-                        child: ListView.builder(
-                            padding: const EdgeInsets.all(8),
-                            itemCount: con.suarsNames.length ,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal:8.0,vertical: 4),
-                                child: InkWell(
-                                  onTap: (){
-                                    if(mounted){
-                                      setState(() {
-                                        print("my suras${con.surasId}");
+            return Container(
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                children: [
 
-                                        if(con.audioPlayer!=null&&con.isSuraPlaying!=null&&con.isSuraPlaying&& con.currentIndex==index){
-                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlayerPage(newone: false,)));
-                                          print('first called');
-                                        }else if(con.audioPlayer!=null&&con.isSuraPlaying!=null&&con.isSuraPlaying){
-                                          con.isSuraPlaying=false;
-                                          con.audioPlayer.stop();
-                                          con.audioPlayer.dispose();
-                                          con.currentIndex=index;
-                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlayerPage(newone: true,)));
-                                          print('second called');
-                                        }else{
-                                          con.currentIndex=index;
-                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlayerPage(newone: true,)));
-                                          print('third called');
-                                        }
+                  Container(
+                    child: Container(
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                        child: Container(
+                          width: (MediaQuery.of(context).size.width),
+                          height: isLoaded?((MediaQuery.of(context).size.height*.87)-(_Ad.size.height.toDouble()+4.0))
+                              :(MediaQuery.of(context).size.height*.87 ),
+                          child: ListView.builder(
+                              padding: const EdgeInsets.all(8),
+                              itemCount: con.suarsNames.length ,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal:8.0,vertical: 4),
+                                  child: InkWell(
+                                    onTap: (){
+                                      if(mounted){
+                                        setState(() {
+                                          print("my suras${con.surasId}");
 
-                                      });
+                                          if(con.audioPlayer!=null&&con.isSuraPlaying!=null&&con.isSuraPlaying&& con.currentIndex==index){
+                                            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlayerPage(newone: false,)));
+                                            print('first called');
+                                          }else if(con.audioPlayer!=null&&con.isSuraPlaying!=null&&con.isSuraPlaying){
+                                            con.isSuraPlaying=false;
+                                            con.audioPlayer.stop();
+                                            con.audioPlayer.dispose();
+                                            con.currentIndex=index;
+                                            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlayerPage(newone: true,)));
+                                            print('second called');
+                                          }else{
+                                            con.currentIndex=index;
+                                            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlayerPage(newone: true,)));
+                                            print('third called');
+                                          }
 
-                                    }
+                                        });
 
-
-
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.black,
-                                        ),
-                                        borderRadius: BorderRadius.all(Radius.circular(20))
-                                    ),
-                                    height: 50,
-                                  //  color: Colors.grey,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
+                                      }
 
 
-                                       // index==con.currentIndex
-                                        Observer(
-                                          builder: (_) {
-                                          return
-                                                 Visibility(
-                                                  visible: index==con.currentIndex,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.only(right:20.0),
-                                                    child: Icon(
-                                                      Icons.play_arrow,
-                                                      size: 25,
-                                                      color: Colors.green[800],
+
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: Colors.black,
+                                          ),
+                                          borderRadius: BorderRadius.all(Radius.circular(20))
+                                      ),
+                                      height: 50,
+                                    //  color: Colors.grey,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+
+
+                                         // index==con.currentIndex
+                                          Observer(
+                                            builder: (_) {
+                                            return
+                                                   Visibility(
+                                                    visible: index==con.currentIndex,
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.only(right:20.0),
+                                                      child: Icon(
+                                                        Icons.play_arrow,
+                                                        size: 25,
+                                                        color: Colors.green[800],
+                                                      ),
                                                     ),
-                                                  ),
+                                                  );
+                                                }
+                                          ),
+                                          Observer(
+                                          builder: (_) {
+                                            return Visibility(
+                                              visible: index != con.currentIndex,
+                                              child: SizedBox(
+                                                width: 0,
+                                              ),
+                                            );
+                                          }
+                                          ),
+                                          Center(child: Text( con.suarsNames[index] ,style: TextStyle(fontSize: 22,color:Colors.green[800],),)),
+
+                                          Observer(
+                                              builder: (_) {
+                                                return SizedBox(
+                                                  width: index != con.currentIndex?50:70,
                                                 );
                                               }
-                                        ),
-                                        Observer(
-                                        builder: (_) {
-                                          return Visibility(
-                                            visible: index != con.currentIndex,
-                                            child: SizedBox(
-                                              width: 0,
-                                            ),
-                                          );
-                                        }
-                                        ),
-                                        Center(child: Text( con.suarsNames[index] ,style: TextStyle(fontSize: 22,color:Colors.green[800],),)),
+                                          ),
 
-                                        Observer(
-                                            builder: (_) {
-                                              return SizedBox(
-                                                width: index != con.currentIndex?50:70,
-                                              );
-                                            }
-                                        ),
-
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            }
+                                );
+                              }
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
+                  checkForAd(),
 
-//                Container(
-//                  width: 468,
-//                  height: 60,
-//                  padding: EdgeInsets.only(bottom: 10.0),
-//                  alignment: Alignment.bottomCenter,
-//                  child: AdWidget(ad: _bannerAd),
-//                ),
-              ],
+
+                ],
+              ),
             );
 
           },

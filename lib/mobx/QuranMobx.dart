@@ -22,8 +22,7 @@ part 'QuranMobx.g.dart';
 class QuranController = QuranMobx with _$QuranController;
 
 abstract class QuranMobx with Store {
-  /*"https://gad25.xyz/Quran/QuranShared.php"*/
-  final url =  "https://server11.mp3quran.net/minsh_mjwd";
+   final url =  "https://server11.mp3quran.net/minsh_mjwd/";
   final client = http.Client();
   final encoder = JsonEncoder.withIndent("  ");
 

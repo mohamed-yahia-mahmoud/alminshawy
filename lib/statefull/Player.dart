@@ -38,7 +38,36 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
       reverseDuration: Duration(milliseconds: 750),
     );
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            ///
     WidgetsBinding.instance.addPostFrameCallback((_) {
+
+      con.audioPlayer.onPlayerCompletion.listen((event) {                                
+                                                                                         
+           setState(() {                                                                 
+             con.isSuraPlaying=true;                                                     
+             _animationIconController1.forward();                                        
+             con.currentIndex=con.currentIndex+1;                                        
+             con.audioPlayer.play("${con.url}${con.surasId[con.currentIndex]}.mp3");     
+           });                                                                           
+                                                                                         
+                                                                                         
+       });                                                                               
+
+
 
       if(widget.newone){
         con.my_position = con.my_slider;
@@ -52,7 +81,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
             });
           }
         } ;
-
+                                   
         con.audioPlayer.positionHandler = (p) {
           if(mounted){
             setState(() {
@@ -161,6 +190,10 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                             }
 
                           },
+                          onChangeEnd: (double v) {
+
+                          },
+
                         ),
                         SizedBox(height: 0,),
                         Row(
@@ -226,8 +259,6 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                                   ),
                                 ),
 
-
-
                                 //backward 10 seconds
                                 InkWell(
                                   onTap: () {
@@ -250,9 +281,9 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                                     if(mounted){
                                     setState(() {
                                                   if (!con.isSuraPlaying) {
+                                                    print('my url :  ${con.url}${con.surasId[con.currentIndex]}.mp3');
                                                     con.audioPlayer.play("${con.url}${con.surasId[con.currentIndex]}.mp3");
-                                                   /* con.myIcon=Icon(Icons.pause,color: Colors.white,size: 35,);*/
-                                                    _animationIconController1.forward();
+                                                     _animationIconController1.forward();
                                                   } else {
                                                     con.audioPlayer.pause();
                                                   _animationIconController1.reverse();
@@ -298,7 +329,6 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                                     if(mounted){
                                       setState(() {
                                         con.isSuraPlaying=true;
-                                        /* con.myIcon=Icon(Icons.pause,color: Colors.white,size: 35,);*/
                                         _animationIconController1.forward();
                                         con.currentIndex=con.currentIndex+1;
                                         con.audioPlayer.play("${con.url}${con.surasId[con.currentIndex]}.mp3");

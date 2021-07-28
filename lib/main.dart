@@ -14,6 +14,12 @@ void main() {
 
   WidgetsFlutterBinding.ensureInitialized();
    MobileAds.instance.initialize();
+  MobileAds.instance.updateRequestConfiguration(
+    RequestConfiguration(
+        tagForChildDirectedTreatment:
+        TagForChildDirectedTreatment.unspecified,
+        testDeviceIds: <String>["9450204315685041D5A6E38F35D3C17E"]),
+  );
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
