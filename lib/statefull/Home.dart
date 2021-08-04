@@ -9,10 +9,9 @@ import 'package:alminshawy/statless/AlertLogOut.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
  import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
-import 'Ad_helper.dart';
+ import 'Ad_helper.dart';
 import 'AboutShikh.dart';
-
+import 'package:launch_review/launch_review.dart';
 
 const String testDevice ='3ADF6D1F2FF900409FCD7AFFF73CF972';
 
@@ -81,12 +80,14 @@ class _HomeState extends State<Home> {
   Widget checkForAd(){
     if(isLoaded){
       return Container(
+        width: _Ad.size.width.toDouble(),
+        height: _Ad.size.height.toDouble(),
         child: AdWidget(
           ad: _Ad,
         ),
-        width: _Ad.size.width.toDouble(),
-        height: _Ad.size.height.toDouble(),
-        alignment: Alignment.bottomCenter,
+        // width: _Ad.size.width.toDouble(),
+        // height: _Ad.size.height.toDouble(),
+         alignment: Alignment.bottomCenter,
       );
     }else{
       return Container();
@@ -195,10 +196,14 @@ class _HomeState extends State<Home> {
                 ),
               ),
 
+              //https://play.google.com/store/apps/details?id=com.mohamed_yahiaElomda.alafaasy
               ListTile(
                 title: Center(child: Text("تطبيقات أخرى",style: TextStyle(color: Colors.green,fontSize: 18,),)),
                 onTap: (){
-                  Toast.show("حاليا لا توجد تطبيقات اخري ولكن سيتم اضافتها قريبا", context, duration: Toast.LENGTH_SHORT, gravity:  Toast.TOP);
+                  LaunchReview.launch(
+                    androidAppId: "com.mohamed_yahiaElomda.alafaasy",
+                    iOSAppId: "",
+                  );
 
                 },
               ),
@@ -260,109 +265,104 @@ class _HomeState extends State<Home> {
                 children: [
 
                   Container(
-                    child: Container(
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                        child: Container(
-                          width: (MediaQuery.of(context).size.width),
-                          height: isLoaded?((MediaQuery.of(context).size.height*.87)-(_Ad.size.height.toDouble()+4.0))
-                              :(MediaQuery.of(context).size.height*.87 ),
-                          child: ListView.builder(
-                              padding: const EdgeInsets.all(8),
-                              itemCount: con.suarsNames.length ,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal:8.0,vertical: 4),
-                                  child: InkWell(
-                                    onTap: (){
-                                      if(mounted){
-                                        setState(() {
-                                          print("my suras${con.surasId}");
+                    // child: BackdropFilter(
+                    //   filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                      child: Container(
+                        width: (MediaQuery.of(context).size.width),
+                        height: isLoaded?((MediaQuery.of(context).size.height*.87)-(_Ad.size.height.toDouble()+4.0))
+                            :(MediaQuery.of(context).size.height*.87),
+                        child: ListView.builder(
+                            padding: const EdgeInsets.all(8),
+                            itemCount: con.suarsNames.length ,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal:8.0,vertical: 4),
+                                child: InkWell(
+                                  onTap: (){
+                                    if(mounted){
+                                      setState(() {
+                                        print("my suras${con.surasId}");
 
-                                          if(con.audioPlayer!=null&&con.isSuraPlaying!=null&&con.isSuraPlaying&& con.currentIndex==index){
-                                            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlayerPage(newone: false,)));
-                                            print('first called');
-                                          }else if(con.audioPlayer!=null&&con.isSuraPlaying!=null&&con.isSuraPlaying){
-                                            con.isSuraPlaying=false;
-                                            con.audioPlayer.stop();
-                                            con.audioPlayer.dispose();
-                                            con.currentIndex=index;
-                                            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlayerPage(newone: true,)));
-                                            print('second called');
-                                          }else{
-                                            con.currentIndex=index;
-                                            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlayerPage(newone: true,)));
-                                            print('third called');
-                                          }
+                                        if(con.audioPlayer!=null&&con.isSuraPlaying!=null&&con.isSuraPlaying&& con.currentIndex==index){
+                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlayerPage(newone: false,)));
+                                          print('first called');
+                                        }else if(con.audioPlayer!=null&&con.isSuraPlaying!=null&&con.isSuraPlaying){
+                                          con.isSuraPlaying=false;
+                                          con.audioPlayer.stop();
+                                          con.audioPlayer.dispose();
+                                          con.currentIndex=index;
+                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlayerPage(newone: true,)));
+                                          print('second called');
+                                        }else{
+                                          con.currentIndex=index;
+                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PlayerPage(newone: true,)));
+                                          print('third called');
+                                        }
 
-                                        });
+                                      });
 
-                                      }
-
-
-
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Colors.black,
-                                          ),
-                                          borderRadius: BorderRadius.all(Radius.circular(20))
-                                      ),
-                                      height: 50,
-                                    //  color: Colors.grey,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
+                                    }
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.black,
+                                        ),
+                                        borderRadius: BorderRadius.all(Radius.circular(20))
+                                    ),
+                                    height: 50,
+                                  //  color: Colors.grey,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
 
 
-                                         // index==con.currentIndex
-                                          Observer(
-                                            builder: (_) {
-                                            return
-                                                   Visibility(
-                                                    visible: index==con.currentIndex,
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.only(right:20.0),
-                                                      child: Icon(
-                                                        Icons.play_arrow,
-                                                        size: 25,
-                                                        color: Colors.green[800],
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-                                          ),
-                                          Observer(
+                                       // index==con.currentIndex
+                                        Observer(
                                           builder: (_) {
-                                            return Visibility(
-                                              visible: index != con.currentIndex,
-                                              child: SizedBox(
-                                                width: 0,
-                                              ),
-                                            );
-                                          }
-                                          ),
-                                          Center(child: Text( con.suarsNames[index] ,style: TextStyle(fontSize: 22,color:Colors.green[800],),)),
-
-                                          Observer(
-                                              builder: (_) {
-                                                return SizedBox(
-                                                  width: index != con.currentIndex?50:70,
+                                          return
+                                                 Visibility(
+                                                  visible: index==con.currentIndex,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.only(right:20.0),
+                                                    child: Icon(
+                                                      Icons.play_arrow,
+                                                      size: 25,
+                                                      color: Colors.green[800],
+                                                    ),
+                                                  ),
                                                 );
                                               }
-                                          ),
+                                        ),
+                                        Observer(
+                                        builder: (_) {
+                                          return Visibility(
+                                            visible: index != con.currentIndex,
+                                            child: SizedBox(
+                                              width: 0,
+                                            ),
+                                          );
+                                        }
+                                        ),
+                                        Center(child: Text( con.suarsNames[index] ,style: TextStyle(fontSize: 22,color:Colors.green[800],),)),
 
-                                        ],
-                                      ),
+                                        Observer(
+                                            builder: (_) {
+                                              return SizedBox(
+                                                width: index != con.currentIndex?50:70,
+                                              );
+                                            }
+                                        ),
+
+                                      ],
                                     ),
                                   ),
-                                );
-                              }
-                          ),
+                                ),
+                              );
+                            }
                         ),
                       ),
-                    ),
+                  //  ),
                   ),
                   checkForAd(),
 

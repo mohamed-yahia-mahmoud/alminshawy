@@ -39,35 +39,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
     );
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            ///
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
-      con.audioPlayer.onPlayerCompletion.listen((event) {                                
-                                                                                         
-           setState(() {                                                                 
-             con.isSuraPlaying=true;                                                     
-             _animationIconController1.forward();                                        
-             con.currentIndex=con.currentIndex+1;                                        
-             con.audioPlayer.play("${con.url}${con.surasId[con.currentIndex]}.mp3");     
-           });                                                                           
-                                                                                         
-                                                                                         
-       });                                                                               
-
-
 
       if(widget.newone){
         con.my_position = con.my_slider;
@@ -190,9 +162,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                             }
 
                           },
-                          onChangeEnd: (double v) {
 
-                          },
 
                         ),
                         SizedBox(height: 0,),
@@ -284,6 +254,23 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                                                     print('my url :  ${con.url}${con.surasId[con.currentIndex]}.mp3');
                                                     con.audioPlayer.play("${con.url}${con.surasId[con.currentIndex]}.mp3");
                                                      _animationIconController1.forward();
+
+                                                    con.audioPlayer.onPlayerCompletion.listen((event) {
+
+                                                         setState(() {
+                                                           _animationIconController1.reverse();
+                                                           if(con.currentIndex<113){
+                                                             con.isSuraPlaying=true;
+                                                             _animationIconController1.forward();
+                                                             con.currentIndex=con.currentIndex+1;
+                                                             con.audioPlayer.play("${con.url}${con.surasId[con.currentIndex]}.mp3");
+
+                                                           }
+                                                            });
+
+
+                                                     });
+
                                                   } else {
                                                     con.audioPlayer.pause();
                                                   _animationIconController1.reverse();
@@ -350,7 +337,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                       ),
                     ),
 
-                    SizedBox(height: 25,),
+
 
                   ],
                 ),
