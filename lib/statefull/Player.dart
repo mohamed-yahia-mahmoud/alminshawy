@@ -2,144 +2,12 @@ import 'dart:ui';
 
  import 'package:alminshawy/mobx/QuranMobx.dart';
 import 'package:audioplayers/audio_cache.dart';
-//import 'package:audioplayers/audioplayers.dart';
+ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:math' as math;
-import 'package:audio_service/audio_service.dart';
-import 'package:just_audio/just_audio.dart';
 
-int current = 0;
 
-_backgroundTaskEntrypoint(String sura,String suraName,Duration duration,List suraList) {
-  AudioServiceBackground.run(() => AudioPlayerTask(sura,suraName,duration,suraList));
-}
-
-class AudioPlayerTask extends BackgroundAudioTask {
-  final _audioPlayer = AudioPlayer();
-
-  String sura;
-  String suraName;
-  Duration duration;
-  List suraList;
-  AudioPlayerTask(String sura,String suraName,Duration duration,List suraList);
-
-  @override
-  Future<void> onStart(Map<String, dynamic> params) async {
-    AudioServiceBackground.setState(controls: [
-      MediaControl.pause,
-      MediaControl.stop,
-      MediaControl.skipToNext,
-      MediaControl.skipToPrevious
-    ], systemActions: [
-      MediaAction.seekTo
-    ], playing: true, processingState: AudioProcessingState.connecting);
-    // Connect to the URL
-    await _audioPlayer.setUrl(sura);
-    AudioServiceBackground.setMediaItem( MediaItem(
-        id: sura,
-        title: 'القران الكريم للشيخ محمد صديق المنشاوي',
-        artUri:  ('assets/img.jpg'),
-        album: suraName,
-        duration:  duration,
-        artist: 'المنشاوي'));
-    // Now we're ready to play
-    _audioPlayer.play();
-    // Broadcast that we're playing, and what controls are available.
-    AudioServiceBackground.setState(controls: [
-      MediaControl.pause,
-      MediaControl.stop,
-      MediaControl.skipToNext,
-      MediaControl.skipToPrevious
-    ], systemActions: [
-      MediaAction.seekTo
-    ], playing: true, processingState: AudioProcessingState.ready);
-  }
-
-  @override
-  Future<void> onStop() async {
-    AudioServiceBackground.setState(
-        controls: [],
-        playing: false,
-        processingState: AudioProcessingState.ready);
-    await _audioPlayer.stop();
-    await super.onStop();
-  }
-
-  @override
-  Future<void> onPlay() async {
-    AudioServiceBackground.setState(controls: [
-      MediaControl.pause,
-      MediaControl.stop,
-      MediaControl.skipToNext,
-      MediaControl.skipToPrevious
-    ], systemActions: [
-      MediaAction.seekTo
-    ], playing: true, processingState: AudioProcessingState.ready);
-    await _audioPlayer.play();
-    return super.onPlay();
-  }
-
-  @override
-  Future<void> onPause() async {
-    AudioServiceBackground.setState(controls: [
-      MediaControl.play,
-      MediaControl.stop,
-      MediaControl.skipToNext,
-      MediaControl.skipToPrevious
-    ], systemActions: [
-      MediaAction.seekTo
-    ], playing: false, processingState: AudioProcessingState.ready);
-    await _audioPlayer.pause();
-    return super.onPause();
-  }
-
-  @override
-  Future<void> onSkipToNext() async {
-    if (current < suraList.length - 1)
-      current = current + 1;
-    else
-      current = 0;
-
-      AudioServiceBackground.setMediaItem(MediaItem(
-            id: '"https://server11.mp3quran.net/minsh_mjwd/"${suraList[current]}.mp3"',
-            title: 'القران الكريم للشيخ محمد صديق المنشاوي',
-           artUri:  ('assets/img.jpg'),
-            album:  suraName,
-             duration:  duration,
-           artist: 'المنشاوي'));
-           await _audioPlayer.setUrl('"https://server11.mp3quran.net/minsh_mjwd/"${suraList[current]}.mp3"');
-
-    AudioServiceBackground.setState(position: Duration.zero);
-    return super.onSkipToNext();
-  }
-
-  @override
-  Future<void> onSkipToPrevious() async {
-    if (current != 0)
-      current = current - 1;
-    else
-      current = suraList.length - 1;
-
-    AudioServiceBackground.setMediaItem(MediaItem(
-        id: '"https://server11.mp3quran.net/minsh_mjwd/"${suraList[current]}.mp3"',
-        title: 'القران الكريم للشيخ محمد صديق المنشاوي',
-        artUri:  ('assets/img.jpg'),
-        album:  suraName,
-        duration:  duration,
-        artist: 'المنشاوي'));
-    await _audioPlayer.setUrl('"https://server11.mp3quran.net/minsh_mjwd/"${suraList[current]}.mp3"');
-    AudioServiceBackground.setState(position: Duration.zero);
-    return super.onSkipToPrevious();
-  }
-
-  @override
-  Future<void> onSeekTo(Duration position) {
-    _audioPlayer.seek(position);
-    AudioServiceBackground.setState(position: position);
-    return super.onSeekTo(position);
-  }
-}
 
 class PlayerPage extends StatefulWidget {
 
@@ -151,8 +19,6 @@ class PlayerPage extends StatefulWidget {
   _PlayerPageState createState() => _PlayerPageState();
 }
 
-
- 
 
 class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
 
@@ -184,7 +50,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
             });
           }
         } ;
-                                   
+
         con.audioPlayer.positionHandler = (p) {
           if(mounted){
             setState(() {
@@ -376,20 +242,8 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                                   ),
                                 ),
 
-                                //play pause button
-                                StreamBuilder<PlaybackState>(
-                                     stream: AudioService.playbackStateStream,
-                                                      builder: (context, snapshot) {
-                                                        final playing = snapshot.data?.playing ?? false;
-                                                        if (playing)
-                                                          return ElevatedButton(
-                                                              child: Text("Pause"),
-                                                              onPressed: () {
-                                                                AudioService.pause();
-                                                              });
-                                                        else
-                                                             return
-                                                          GestureDetector(
+
+                                 GestureDetector(
 
                                                                onTap: () {                                                                                      
                                                                  if(mounted){
@@ -407,7 +261,7 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                                                                                           con.isSuraPlaying=true;
                                                                                           _animationIconController1.forward();
                                                                                           con.currentIndex=con.currentIndex+1;
-                                                                                          con.audioPlayer.play("${con.url}${con.surasId[con.currentIndex]}.mp3")
+                                                                                    con.audioPlayer.play("${con.url}${con.surasId[con.currentIndex]}.mp3");
 
                                                                                         }
                                                                                          });
@@ -438,28 +292,11 @@ class _PlayerPageState extends State<PlayerPage> with TickerProviderStateMixin {
                                                                    ),
                                                                  ),
                                                                ),
-                                                                                                  );
-
-
-
-                                                          // return ElevatedButton(
-                                                          //     child: Text("Play"),
-                                                          //     onPressed: () {
-                                                          //       if (AudioService.running) {
-                                                          //         AudioService.play();
-                                                          //       } else {
-                                                          //         AudioService.start(
-                                                          //           backgroundTaskEntrypoint:
-                                                          //               _backgroundTaskEntrypoint,
-                                                          //         );
-                                                          //       }
-                                                          //     });
-                                                      }
+                                                                                                  ),
 
 
 
 
-                                ),
                                 //forward 10 seconds
                                 InkWell(
                                   onTap: () {
