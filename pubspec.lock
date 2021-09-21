@@ -84,7 +84,7 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.11.1"
+    version: "1.11.1+1"
   build_runner_core:
     dependency: transitive
     description:
@@ -405,7 +405,7 @@ packages:
       name: node_io
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.1"
+    version: "1.2.0"
   package_config:
     dependency: transitive
     description:
